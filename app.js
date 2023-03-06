@@ -1,16 +1,15 @@
-const dotenv = require('dotenv');
+// Load environment variables
+require('dotenv').config();
+
 const express = require('express');
 const { faker } = require('@faker-js/faker');
 const path = require('path');
 const mongoose = require('mongoose');
 
-const Campground = require('./models/campgrounds');
-
-// Load environment variables
-dotenv.config();
+const Campground = require('./models/campground');
 
 const PORT = process.env.PORT || 3000;
-const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/campground-directory-app';
+const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/campground-reviews-app';
 
 // Create an express app
 const app = express();
@@ -24,26 +23,9 @@ app.get('/', (req, res) => {
   res.render('home');
 });
 
-app.get('/create-campgrounds', (req, res) => {
-  // Create a new campground
-  const campground = new Campground({
-    title: faker.company.companyName(),
-    price: faker.random.numeric(2),
-    description: faker.lorem.paragraph(),
-    location: faker.address.streetName(),
-  });
-
-  // Save the campground to the database
-  campground
-    .save()
-    .then((campground) => {
-      console.log(campground);
-      res.send(campground);
-    })
-    .catch((err) => {
-      console.log(err);
-      res.send(err);
-    });
+app.get('/campgrounds', async (req, res) => {
+  const campgrounds = await Campground.find({});
+  res.render('campgrounds/index', { campgrounds });
 });
 
 // Connect to the database
