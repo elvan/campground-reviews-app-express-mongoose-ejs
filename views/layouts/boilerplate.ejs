@@ -20,8 +20,15 @@
 
   <body class="d-flex flex-column vh-100">
     <%- include('../partials/navbar')%>
-    <main class="container mt-5"><%- body %></main>
+
+    <!-- prettier-ignore -->
+    <main class="container mt-5">
+      <%- include('../partials/flash')%>
+      <%- body %>
+    </main>
+
     <%- include('../partials/footer')%>
+
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.11.6/dist/umd/popper.min.js"
       integrity="sha384-oBqDVmMz9ATKxIep9tiCxS/Z9fNfEXiDAYTujMAeBAsjFuCZSmKbSSUnQlmh/jp3"
