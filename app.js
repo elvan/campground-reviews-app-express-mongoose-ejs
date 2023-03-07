@@ -87,6 +87,10 @@ app.delete(
   })
 );
 
+app.all('*', (req, res, next) => {
+  next(new ExpressError('Page Not Found', 404));
+});
+
 app.use((err, req, res, next) => {
   const { statusCode = 500 } = err;
   if (!err.message) err.message = 'Oh No, Something Went Wrong!';
@@ -101,8 +105,15 @@ mongoose
     useUnifiedTopology: true,
   })
   .then(() => {
-    const { host } = mongoose.connection;
-    console.log(`Connected to the database ${host}`);
+    const db = mongoose.connection;
+
+    db.on('error', console.error.bind(console, 'Connection error:'));
+
+    db.once('open', () => {
+      console.log('Database connected');
+    });
+
+    console.log(`Connected to the database ${db.host}`);
 
     // Start the server
     app.listen(PORT, () => {
