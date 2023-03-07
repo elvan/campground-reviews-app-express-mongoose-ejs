@@ -4,6 +4,7 @@ require('dotenv').config();
 const PORT = process.env.PORT || 3000;
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/campground-reviews-app';
 
+const ejsMate = require('ejs-mate');
 const express = require('express');
 const path = require('path');
 const methodOverride = require('method-override');
@@ -13,6 +14,8 @@ const Campground = require('./models/campground');
 
 // Create an express app
 const app = express();
+
+app.engine('ejs', ejsMate);
 
 // Set the view engine to ejs
 app.set('view engine', 'ejs');
