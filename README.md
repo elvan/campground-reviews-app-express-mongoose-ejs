@@ -1,1 +1,1 @@
-# campground-directory-app-express-mongoose-ejs
+# campground-reviews-app-express-mongoose-ejs
