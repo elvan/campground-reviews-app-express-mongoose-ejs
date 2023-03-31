@@ -1,0 +1,36 @@
+body {
+  height: 100vh;
+  text-shadow: 0 0.05rem 0.1rem rgba(0, 0, 0, 0.5);
+  background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)),
+    url('https://images.pexels.com/photos/7510675/pexels-photo-7510675.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=2');
+  background-position: center;
+  background-size: cover;
+  box-shadow: inset 0 0 5rem rgba(0, 0, 0, 0.5);
+}
+.cover-container {
+  max-width: 60vw;
+}
+
+.nav-link {
+  margin-left: 1rem;
+  padding: 0.25rem 0;
+  border-bottom: 0.25rem solid transparent;
+  color: rgba(255, 255, 255, 0.5);
+  font-weight: 700;
+}
+
+.nav-link:hover {
+  border-bottom-color: rgba(255, 255, 255, 0.5);
+  color: rgba(255, 255, 255, 0.5);
+}
+
+.nav-link.active {
+  border-bottom-color: white;
+  color: white;
+}
+
+.btn-secondary,
+.btn-secondary:hover {
+  color: #333;
+  text-shadow: none;
+}
