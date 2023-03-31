@@ -10,6 +10,7 @@ const ejsMate = require('ejs-mate');
 const express = require('express');
 const flash = require('connect-flash');
 const methodOverride = require('method-override');
+const mongoSanitize = require('express-mongo-sanitize');
 const mongoose = require('mongoose');
 const passport = require('passport');
 const path = require('path');
@@ -33,6 +34,11 @@ app.set('views', path.join(__dirname, 'views'));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
 app.use(express.static(path.join(__dirname, 'public')));
+app.use(
+  mongoSanitize({
+    replaceWith: '_',
+  })
+);
 
 const sessionConfig = {
   secret: SECRET,
