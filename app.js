@@ -1,4 +1,3 @@
-// Load environment variables
 require('dotenv').config();
 
 const PORT = process.env.PORT || 3000;
@@ -9,6 +8,7 @@ const LocalStrategy = require('passport-local');
 const ejsMate = require('ejs-mate');
 const express = require('express');
 const flash = require('connect-flash');
+const helmet = require('helmet');
 const methodOverride = require('method-override');
 const mongoSanitize = require('express-mongo-sanitize');
 const mongoose = require('mongoose');
@@ -54,6 +54,54 @@ const sessionConfig = {
 
 app.use(session(sessionConfig));
 app.use(flash());
+app.use(helmet());
+
+const scriptSrcUrls = [
+  'https://api.mapbox.com/',
+  'https://api.tiles.mapbox.com/',
+  'https://cdn.jsdelivr.net',
+  'https://cdnjs.cloudflare.com/',
+  'https://kit.fontawesome.com/',
+  'https://stackpath.bootstrapcdn.com/',
+];
+const styleSrcUrls = [
+  'https://api.mapbox.com/',
+  'https://api.tiles.mapbox.com/',
+  'https://cdn.jsdelivr.net',
+  'https://fonts.googleapis.com/',
+  'https://kit-free.fontawesome.com/',
+  'https://stackpath.bootstrapcdn.com/',
+  'https://use.fontawesome.com/',
+];
+const connectSrcUrls = [
+  'https://a.tiles.mapbox.com/',
+  'https://api.mapbox.com/',
+  'https://b.tiles.mapbox.com/',
+  'https://events.mapbox.com/',
+];
+const fontSrcUrls = ['https://fonts.gstatic.com'];
+
+app.use(
+  helmet.contentSecurityPolicy({
+    directives: {
+      defaultSrc: [],
+      connectSrc: ["'self'", ...connectSrcUrls],
+      scriptSrc: ["'unsafe-inline'", "'self'", ...scriptSrcUrls],
+      styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
+      workerSrc: ["'self'", 'blob:'],
+      objectSrc: [],
+      imgSrc: [
+        "'self'",
+        'blob:',
+        'data:',
+        'https://images.pexels.com/',
+        'https://images.unsplash.com/',
+        'https://res.cloudinary.com/desmwpnfw/',
+      ],
+      fontSrc: ["'self'", ...fontSrcUrls],
+    },
+  })
+);
 
 app.use(passport.initialize());
 app.use(passport.session());
@@ -88,7 +136,6 @@ app.use((err, req, res, next) => {
   res.status(statusCode).render('error', { err });
 });
 
-// Connect to the database
 mongoose
   .connect(MONGODB_URI, {
     useNewUrlParser: true,
@@ -106,7 +153,6 @@ mongoose
 
     console.log(`Connected to the database ${db.host}`);
 
-    // Start the server
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
