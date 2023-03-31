@@ -35,11 +35,15 @@ router.get('/login', (req, res) => {
 
 router.post(
   '/login',
-  passport.authenticate('local', { failureFlash: true, failureRedirect: '/login' }),
+  passport.authenticate('local', {
+    failureFlash: true,
+    failureRedirect: '/login',
+    failureMessage: true,
+    keepSessionInfo: true,
+  }),
   (req, res) => {
-    req.flash('success', 'welcome back!');
+    req.flash('success', 'User logged to TheCampgrounds');
     const redirectUrl = req.session.returnTo || '/campgrounds';
-    delete req.session.returnTo;
     res.redirect(redirectUrl);
   }
 );
