@@ -5,6 +5,7 @@ const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/campgr
 const SECRET = process.env.SECRET || 'secret123456';
 
 const LocalStrategy = require('passport-local');
+const connectMongo = require('connect-mongo');
 const ejsMate = require('ejs-mate');
 const express = require('express');
 const flash = require('connect-flash');
@@ -22,29 +23,39 @@ const campgrounds = require('./routes/campgrounds');
 const reviews = require('./routes/reviews');
 const userRoutes = require('./routes/users');
 
-// Create an express app
 const app = express();
+const MongoDBStore = connectMongo(session);
 
 app.engine('ejs', ejsMate);
 
-// Set the view engine to ejs
 app.set('view engine', 'ejs');
 app.set('views', path.join(__dirname, 'views'));
 
+app.use(express.static(path.join(__dirname, 'public')));
 app.use(express.urlencoded({ extended: true }));
 app.use(methodOverride('_method'));
-app.use(express.static(path.join(__dirname, 'public')));
 app.use(
   mongoSanitize({
     replaceWith: '_',
   })
 );
 
+const store = new MongoDBStore({
+  secret: SECRET,
+  touchAfter: 24 * 60 * 60,
+  url: MONGODB_URI,
+});
+
+store.on('error', function (e) {
+  console.log('SESSION STORE ERROR', e);
+});
+
 const sessionConfig = {
   name: 'session',
-  secret: SECRET,
   resave: false,
   saveUninitialized: true,
+  secret: SECRET,
+  store,
   cookie: {
     httpOnly: true,
     expires: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7),
@@ -52,9 +63,9 @@ const sessionConfig = {
   },
 };
 
-app.use(session(sessionConfig));
 app.use(flash());
 app.use(helmet());
+app.use(session(sessionConfig));
 
 const scriptSrcUrls = [
   'https://api.mapbox.com/',
@@ -84,12 +95,12 @@ const fontSrcUrls = ['https://fonts.gstatic.com'];
 app.use(
   helmet.contentSecurityPolicy({
     directives: {
-      defaultSrc: [],
       connectSrc: ["'self'", ...connectSrcUrls],
+      defaultSrc: [],
+      objectSrc: [],
       scriptSrc: ["'unsafe-inline'", "'self'", ...scriptSrcUrls],
       styleSrc: ["'self'", "'unsafe-inline'", ...styleSrcUrls],
       workerSrc: ["'self'", 'blob:'],
-      objectSrc: [],
       imgSrc: [
         "'self'",
         'blob:',
@@ -138,8 +149,8 @@ app.use((err, req, res, next) => {
 
 mongoose
   .connect(MONGODB_URI, {
-    useNewUrlParser: true,
     useCreateIndex: true,
+    useNewUrlParser: true,
     useUnifiedTopology: true,
   })
   .then(() => {
