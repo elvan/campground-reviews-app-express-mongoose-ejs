@@ -19,6 +19,7 @@ const ExpressError = require('./utils/ExpressError');
 const User = require('./models/user');
 const campgrounds = require('./routes/campgrounds');
 const reviews = require('./routes/reviews');
+const userRoutes = require('./routes/users');
 
 // Create an express app
 const app = express();
@@ -49,7 +50,7 @@ app.use(flash());
 
 app.use(passport.initialize());
 app.use(passport.session());
-passport.use(new LocalStrategy(User.authenticate()));
+passport.use(new LocalStrategy.Strategy(User.authenticate()));
 
 passport.serializeUser(User.serializeUser());
 passport.deserializeUser(User.deserializeUser());
@@ -60,6 +61,7 @@ app.use((req, res, next) => {
   next();
 });
 
+app.use('/', userRoutes);
 app.use('/campgrounds', campgrounds);
 app.use('/campgrounds/:id/reviews', reviews);
 
